@@ -1,4 +1,4 @@
-from ocr.winapi import *
+from utils.winapi import *
 
 callbacks_def = {
     # static void DefaultReadOnPush(uint32_t request_id, const void* request_info, void* user_data);
@@ -50,3 +50,16 @@ def DefaultRemoteProcessLaunchFailed(error_code: c_int, user_data: py_object):
 
 def DefaultRemoteMojoError(errorbuf: c_void_p, errorsize: c_int, user_data: py_object):
     print(f"DefaultRemoteOnMojoError 回调函数被调用, errorbuf: {errorbuf}, errorsize: {errorsize}")
+
+
+__all__ = [
+    'callbacks_def',
+    'DefaultReadPush',
+    'DefaultReadPull',
+    'DefaultReadShared',
+    'DefaultRemoteConnect',
+    'DefaultRemoteDisConnect',
+    'DefaultRemoteProcessLaunched',
+    'DefaultRemoteProcessLaunchFailed',
+    'DefaultRemoteMojoError'
+]

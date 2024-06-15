@@ -8,9 +8,8 @@ from multiprocessing import Queue, Value
 from google.protobuf.json_format import MessageToJson
 
 from protobuf import ocr_protobuf_pb2
-from ocr.winapi import *
-from ocr.mmmojo_dll import MMMojoInfoMethod
-from ocr.xplugin_manager import XPluginManager
+from utils.winapi import *
+from core import XPluginManager, MMMojoInfoMethod
 
 OCR_MAX_TASK_ID = 32
 
@@ -110,16 +109,14 @@ class OcrManager(XPluginManager):
                                   RequestIdOCR.OCRPush.value)
 
     def CallUsrCallback(self, request_id: c_uint32, serialized_data: c_void_p, data_size: int):
-        print(request_id, serialized_data, data_size)
         ocr_response_ubyte = (c_ubyte * data_size).from_address(serialized_data)
-        ocr_response_array = bytearray(ocr_response_ubyte)
+        ocr_response_array = bytes(ocr_response_ubyte)
         ocr_response = ocr_protobuf_pb2.OcrResponse()
         ocr_response.ParseFromString(ocr_response_array)
         json_response_str = MessageToJson(ocr_response)
         task_id = ocr_response.task_id
         if not self.m_id_path.get(task_id):
             return
-        # print(f"收到识别结果, task_id: {task_id}, result: {json_response}")
         pic_path = self.m_id_path[task_id]
         if self.m_usr_callback:
             self.m_usr_callback(pic_path, self.parse_json_response(json_response_str))
@@ -160,8 +157,11 @@ class OcrManager(XPluginManager):
     def SetTaskIdIdle(self, _id):
         self.m_task_id.put(_id)
 
-    def SetDefaultCallbaks(self):
-        super().SetOneCallback("kMMRemoteConnect", OCRRemoteOnConnect)
-        super().SetOneCallback("kMMRemoteDisconnect", OCRRemoteOnDisConnect)
-        super().SetOneCallback("kMMReadPush", OCRReadOnPush)
-        super().SetDefaultCallbaks()
+    def SetDefaultCallbacks(self):
+        self.SetOneCallback("kMMRemoteConnect", OCRRemoteOnConnect)
+        self.SetOneCallback("kMMRemoteDisconnect", OCRRemoteOnDisConnect)
+        self.SetOneCallback("kMMReadPush", OCRReadOnPush)
+        super().SetDefaultCallbacks()
+
+
+__all__ = ['OCR_MAX_TASK_ID', 'OcrManager']

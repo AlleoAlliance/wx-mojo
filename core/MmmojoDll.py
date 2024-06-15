@@ -1,76 +1,5 @@
-from enum import Enum, auto
-from ocr.winapi import *
-
-
-class MMMojoInfoMethod(Enum):
-    '''
-    typedef enum {
-        kMMNone = 0,
-        kMMPush,
-        kMMPullReq,
-        kMMPullResp,
-        kMMShared,
-    } MMMojoInfoMethod;
-    '''
-    kMMNone = 0
-    kMMPush = auto()
-    kMMPullReq = auto()
-    kMMPullResp = auto()
-    kMMShared = auto()
-
-
-class MMMojoEnvironmentCallbackType(Enum):
-    '''
-    typedef enum {
-        kMMUserData = 0,
-        kMMReadPush,
-        kMMReadPull,
-        kMMReadShared,
-        kMMRemoteConnect,
-        kMMRemoteDisconnect,
-        kMMRemoteProcessLaunched,
-        kMMRemoteProcessLaunchFailed,
-        kMMRemoteMojoError,
-    } MMMojoEnvironmentCallbackType;
-    '''
-    kMMUserData = 0
-    kMMReadPush = auto()
-    kMMReadPull = auto()
-    kMMReadShared = auto()
-    kMMRemoteConnect = auto()
-    kMMRemoteDisconnect = auto()
-    kMMRemoteProcessLaunched = auto()
-    kMMRemoteProcessLaunchFailed = auto()
-    kMMRemoteMojoError = auto()
-
-
-class MMMojoEnvironmentInitParamType(Enum):
-    '''
-    typedef enum {
-        kMMHostProcess = 0,
-        kMMLoopStartThread,
-        kMMExePath,
-        kMMLogPath,
-        kMMLogToStderr,
-        kMMAddNumMessagepipe,
-        kMMSetDisconnectHandlers,
-        #if defined(WIN32)
-        kMMDisableDefaultPolicy = 1000,
-        kMMElevated,
-        kMMCompatible,
-        #endif  // defined(WIN32)
-    } MMMojoEnvironmentInitParamType;
-    '''
-    kMMHostProcess = 0
-    kMMLoopStartThread = auto()
-    kMMExePath = auto()
-    kMMLogPath = auto()
-    kMMLogToStderr = auto()
-    kMMAddNumMessagepipe = auto()
-    kMMSetDisconnectHandlers = auto()
-    kMMDisableDefaultPolicy = 1000
-    kMMElevated = auto()
-    kMMCompatible = auto()
+from utils.winapi import *
+from .enums import MMMojoInfoMethod, MMMojoEnvironmentCallbackType, MMMojoEnvironmentInitParamType
 
 
 class MmmojoDll(object):
@@ -142,3 +71,8 @@ class MmmojoDll(object):
 
     def __getitem__(self, key):
         return self._funcs_dict[key]
+
+
+__all__ = [
+    'MmmojoDll',
+]

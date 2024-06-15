@@ -1,77 +1,8 @@
 import os
 import platform
 from typing import Callable, Dict, List
-from enum import Enum
-from ocr.winapi import *
-from ocr import default_callback
-from ocr.mmmojo_dll import MmmojoDll, MMMojoEnvironmentCallbackType, MMMojoEnvironmentInitParamType
-
-
-class RequestIdUtility(Enum):
-    """
-    enum RequestIdUtility
-    {
-        UtilityHiPush = 10001,				//是Utility启动发送的
-        UtilityInitPullReq = 10002,			//初始化请求
-        UtilityInitPullResp = 10003,		//回复创建的都是Shared类型的info, 但是调用了SwapMMMojoWriteInfoCallback, 所以回调的还是Pull
-        UtilityResampleImagePullReq = 10010,
-        UtilityResampleImagePullResp = 10011,
-        UtilityDecodeImagePullReq = 10020,
-        UtilityDecodeImagePullResp = 10021,
-        UtilityPicQRScanPullReq = 10030,	//10030是点击OCR时(也是打开图片时)发送的请求, 参数是图片路径
-        UtilityQRScanPullReq = 10031,		//10031是截图框选时发送的请求, 参数应该是某种编码后的图片数据
-        UtilityQRScanPullResp = 10032,		//这两种请求的返回ID都是10032
-        UtilityTextScanPushResp = 10040		//TextScan具体在扫什么不是很清楚 可能是用来判断图片上是否有文字
-    };
-    """
-    UtilityHiPush = 10001
-    UtilityInitPullReq = 10002
-    UtilityInitPullResp = 10003
-    UtilityResampleImagePullReq = 10010
-    UtilityResampleImagePullResp = 10011
-    UtilityDecodeImagePullReq = 10020
-    UtilityDecodeImagePullResp = 10021
-    UtilityPicQRScanPullReq = 10030
-    UtilityQRScanPullReq = 10031
-    UtilityQRScanPullResp = 10032
-    UtilityTextScanPushResp = 10040
-
-
-class RequestIdPlayer(Enum):
-    PlayerHiPush = 10001
-    PlayerInitPullReq = 10002
-    PlayerInitPullResp = 10003
-    PlayerInitPlayerCorePush = 10010
-    PlayerCreatePlayerCorePullReq = 10011
-    PlayerCreatePlayerCorePullResp = 10012
-    PlayerDestroyPlayerCorePush = 10013
-    PlayerPrepareAsyncPush = 10014
-    PlayerStartPush = 10015
-    PlayerStopPush = 10016
-    PlayerPausePush = 10017
-    PlayerResumePush = 10018
-    PlayerSetAudioMutePush = 10019
-    PlayerSeekToAsyncPush = 10020
-    PlayerGetCurrentPositionMsPullReq = 10021
-    PlayerGetCurrentPositionMsPullResp = 10022
-    PlayerSetVideoSurfacePush = 10023
-    PlayerSetAudioVolumePush = 10024
-    PlayerSetDataSourcePush = 10025
-    PlayerSetLoaderSourcePush = 10026
-    PlayerSetRepeatPush = 10027
-    PlayerResizePush = 10028
-    PlayerSetPlaySpeedRatio = 10029
-    PlayerInfoPush = 10030
-    PlayerErrorPlayerPush = 10031
-    PlayerVideoSizeChangedPush = 10032
-    PlayerUnknown0Push = 10033
-    PlayerStatePush = 10034
-    PlayerUnknonw1Push = 10035
-    PlayerUnknown2Push = 10036
-    PlayerStartTaskProxyPush = 10050
-    PlayerStartRequestProxyPush = 10051
-    PlayerCloseRequestProxyPush = 10052
-    PlayerPollingDatProxyPullReq = 10054
+from utils.winapi import *
+from core import MmmojoDll, MMMojoEnvironmentCallbackType, MMMojoEnvironmentInitParamType, default_callback
 
 
 class XPluginManager(object):
@@ -137,7 +68,7 @@ class XPluginManager(object):
         # 设置回调函数的最后一个参数user_data的值
         self._dll.SetMMMojoEnvironmentCallbacks(self.m_mmmojo_env_ptr, MMMojoEnvironmentCallbackType.kMMUserData.value,
                                                 py_object(self.m_cb_usrdata))
-        self.SetDefaultCallbaks()
+        self.SetDefaultCallbacks()
         # 设置启动所需参数
         SetMMMojoEnvironmentInitParams = self._dll.func_def("SetMMMojoEnvironmentInitParams", void,
                                                             *(c_void_p, c_int, c_int))
@@ -152,11 +83,10 @@ class XPluginManager(object):
             cv = c_wchar_p(v)
             self._dll.AppendMMSubProcessSwitchNative(self.m_mmmojo_env_ptr, ck, cv)
             # 启动
-        print(self.m_mmmojo_env_ptr)
         self._dll.StartMMMojoEnvironment(self.m_mmmojo_env_ptr)
         self.m_init_mmmojo_env = True
 
-    def SetDefaultCallbaks(self):
+    def SetDefaultCallbacks(self):
         for i in MMMojoEnvironmentCallbackType:
             fname = i.name
             if fname == "kMMUserData":
@@ -191,3 +121,6 @@ class XPluginManager(object):
 
     def RemoveReadInfo(self, request_info: c_void_p) -> void:
         return self._dll.RemoveMMMojoReadInfo(request_info)
+
+
+__all__ = ['XPluginManager']
