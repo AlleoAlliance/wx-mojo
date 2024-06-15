@@ -17,21 +17,23 @@
 3. Python环境，版本任意
 
 #### 示例
+
 ```python
 import os
 import json
 import time
-from wechat_ocr.ocr_manager import OcrManager, OCR_MAX_TASK_ID
-
+from ocr.ocr_manager import OcrManager, OCR_MAX_TASK_ID
 
 wechat_ocr_dir = "C:\\Users\\Administrator\\AppData\\Roaming\\Tencent\\WeChat\\XPlugin\\Plugins\\WeChatOCR\\7057\\extracted\\WeChatOCR.exe"
 wechat_dir = "D:\\GreenSoftware\\WeChat\\3.9.6.32"
 
-def ocr_result_callback(img_path:str, results:dict):
+
+def ocr_result_callback(img_path: str, results: dict):
     result_file = os.path.basename(img_path) + ".json"
     print(f"识别成功，img_path: {img_path}, result_file: {result_file}")
     with open(result_file, 'w', encoding='utf-8') as f:
-       f.write(json.dumps(results, ensure_ascii=False, indent=2))
+        f.write(json.dumps(results, ensure_ascii=False, indent=2))
+
 
 def main():
     ocr_manager = OcrManager(wechat_dir)
@@ -52,7 +54,7 @@ def main():
         pass
     # 识别输出结果
     ocr_manager.KillWeChatOCR()
-    
+
 
 if __name__ == "__main__":
     main()
